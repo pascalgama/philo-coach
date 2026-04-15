@@ -5,10 +5,532 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Philo Coach — Bac Techno 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script>/* App will be loaded from app.js */</script>
-<meta http-equiv="refresh" content="0;url=https://pascalgama.github.io/philo-coach/">
+<style>
+:root{
+--bg:#0C0C10;--bg2:#141419;--bg3:#1C1C24;--bg4:#25252F;
+--t1:#EDEBE5;--t2:#A09E96;--t3:#6B6964;
+--acc:#E8A849;--acc2:rgba(232,168,73,.12);--acc3:rgba(232,168,73,.25);
+--ok:#4ADE80;--ok2:rgba(74,222,128,.12);
+--err:#F87171;--err2:rgba(248,113,113,.12);
+--purple:#A78BFA;--purple2:rgba(167,139,250,.12);
+--teal:#5EEAD4;--teal2:rgba(94,234,212,.12);
+--coral:#FB923C;--coral2:rgba(251,146,60,.12);
+--blue:#60A5FA;--blue2:rgba(96,165,250,.12);
+--pink:#F472B6;--pink2:rgba(244,114,182,.12);
+--r:12px;--rs:8px;--rp:50px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;line-height:1.55;min-height:100dvh;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+button{font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+::-webkit-scrollbar{width:0;height:0}
+
+.app{display:flex;flex-direction:column;min-height:100dvh;max-width:480px;margin:0 auto}
+.app-header{padding:16px 20px 0;text-align:center}
+.app-logo{font-family:'DM Serif Display',serif;font-size:22px;color:var(--t1)}
+.app-logo span{color:var(--acc)}
+.app-sub{font-size:11px;color:var(--t3);margin-top:2px;letter-spacing:.5px;text-transform:uppercase}
+
+/* NAV TABS */
+.nav{display:flex;gap:4px;padding:14px 16px 0;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.nav::-webkit-scrollbar{display:none}
+.nav-btn{flex:none;font-size:12px;font-weight:600;padding:8px 16px;border-radius:var(--rp);border:1px solid rgba(255,255,255,.06);background:transparent;color:var(--t3);transition:all .2s;white-space:nowrap}
+.nav-btn.on{background:var(--acc2);color:var(--acc);border-color:var(--acc3)}
+.nav-btn:active{transform:scale(.96)}
+
+/* CONTENT */
+.view{display:none;flex:1;padding:16px;overflow-y:auto;padding-bottom:40px}
+.view.on{display:block;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══════ FLASHCARDS ═══════ */
+.fc-progress{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.fc-bar{flex:1;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden}
+.fc-fill{height:100%;background:var(--acc);border-radius:2px;transition:width .3s}
+.fc-count{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--t3)}
+.fc-filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.fc-ftag{font-size:11px;font-weight:600;padding:5px 12px;border-radius:var(--rp);border:1px solid rgba(255,255,255,.06);background:transparent;color:var(--t3);transition:all .15s}
+.fc-ftag.on{border-color:var(--acc3);color:var(--acc);background:var(--acc2)}
+
+.card-wrap{perspective:800px;width:100%;aspect-ratio:3/4;max-height:420px;margin:0 auto 16px;cursor:pointer}
+.card-inner{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.card-wrap.flipped .card-inner{transform:rotateY(180deg)}
+.card-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:var(--r);padding:28px 24px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.card-front{background:var(--bg3);border:1px solid rgba(255,255,255,.06)}
+.card-back{background:var(--bg4);border:1px solid rgba(255,255,255,.1);transform:rotateY(180deg)}
+.card-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;position:absolute;top:16px;left:20px}
+.card-notion{font-size:10px;font-weight:600;padding:3px 10px;border-radius:var(--rp);position:absolute;top:14px;right:16px}
+.card-author{font-family:'DM Serif Display',serif;font-size:24px;margin-bottom:8px}
+.card-work{font-size:13px;color:var(--t2);font-style:italic}
+.card-cite{font-family:'DM Serif Display',serif;font-size:18px;line-height:1.4;margin-bottom:12px;color:var(--t1)}
+.card-these{font-size:13px;color:var(--t2);line-height:1.6}
+.card-hint{font-size:11px;color:var(--t3);position:absolute;bottom:16px}
+
+.fc-btns{display:flex;gap:10px;justify-content:center}
+.fc-btn{font-size:13px;font-weight:600;padding:10px 24px;border-radius:var(--rp);border:none;transition:all .15s}
+.fc-btn:active{transform:scale(.95)}
+.fc-prev{background:var(--bg3);color:var(--t2)}
+.fc-next{background:var(--acc2);color:var(--acc)}
+.fc-shuffle{background:var(--bg3);color:var(--t2);font-size:12px;padding:10px 16px}
+
+/* ═══════ QUIZ ═══════ */
+.quiz-intro{text-align:center;padding:40px 16px}
+.quiz-intro h2{font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:8px}
+.quiz-intro p{font-size:14px;color:var(--t2);margin-bottom:24px}
+.quiz-start{font-size:14px;font-weight:600;padding:12px 32px;border-radius:var(--rp);border:none;background:var(--acc);color:var(--bg);transition:all .15s}
+.quiz-start:active{transform:scale(.96)}
+
+.q-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--r);padding:24px 20px;margin-bottom:16px}
+.q-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--acc);margin-bottom:10px}
+.q-text{font-size:15px;font-weight:600;line-height:1.45;margin-bottom:20px}
+.q-opts{display:flex;flex-direction:column;gap:8px}
+.q-opt{text-align:left;font-size:14px;padding:12px 16px;border-radius:var(--rs);border:1px solid rgba(255,255,255,.08);background:var(--bg3);color:var(--t1);transition:all .15s;line-height:1.4}
+.q-opt:active{transform:scale(.98)}
+.q-opt.correct{background:var(--ok2);border-color:var(--ok);color:var(--ok)}
+.q-opt.wrong{background:var(--err2);border-color:var(--err);color:var(--err)}
+.q-opt.dim{opacity:.45;pointer-events:none}
+.q-explain{margin-top:14px;padding:14px;background:var(--bg4);border-radius:var(--rs);font-size:13px;color:var(--t2);line-height:1.6;display:none}
+.q-explain.show{display:block;animation:fadeIn .2s ease}
+.q-next{display:none;margin-top:14px;width:100%;font-size:13px;font-weight:600;padding:11px;border-radius:var(--rp);border:none;background:var(--acc2);color:var(--acc)}
+.q-next.show{display:block}
+
+.quiz-score{text-align:center;padding:40px 16px}
+.score-circle{width:120px;height:120px;border-radius:50%;border:4px solid var(--acc);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 20px}
+.score-num{font-family:'JetBrains Mono',monospace;font-size:36px;font-weight:700;color:var(--acc)}
+.score-label{font-size:11px;color:var(--t3)}
+.score-msg{font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:8px}
+.score-detail{font-size:14px;color:var(--t2);margin-bottom:24px}
+
+/* ═══════ MÉTHODE ═══════ */
+.method-tabs{display:flex;gap:4px;margin-bottom:16px;overflow-x:auto}
+.method-tabs::-webkit-scrollbar{display:none}
+.mt-btn{flex:none;font-size:11px;font-weight:600;padding:7px 14px;border-radius:var(--rp);border:1px solid rgba(255,255,255,.06);background:transparent;color:var(--t3);white-space:nowrap;transition:all .15s}
+.mt-btn.on{background:var(--purple2);color:var(--purple);border-color:rgba(167,139,250,.3)}
+
+.method-section{display:none}
+.method-section.on{display:block;animation:fadeIn .2s ease}
+.m-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--r);padding:20px;margin-bottom:12px}
+.m-step{display:flex;gap:12px;align-items:flex-start;margin-bottom:16px}
+.m-step:last-child{margin-bottom:0}
+.m-dot{flex:none;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600}
+.m-dot-1{background:var(--teal2);color:var(--teal)}
+.m-dot-2{background:var(--coral2);color:var(--coral)}
+.m-dot-3{background:var(--purple2);color:var(--purple)}
+.m-dot-4{background:var(--acc2);color:var(--acc)}
+.m-body h4{font-size:14px;font-weight:600;margin-bottom:4px}
+.m-body p{font-size:13px;color:var(--t2);line-height:1.55}
+.m-example{background:var(--bg4);border-left:3px solid var(--acc);border-radius:0 var(--rs) var(--rs) 0;padding:14px 16px;margin-top:10px;font-size:13px;color:var(--t2);line-height:1.6}
+.m-example b{color:var(--acc);font-weight:600}
+.m-tag{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;padding:3px 8px;border-radius:var(--rs);margin-bottom:12px}
+.m-warn{background:var(--err2);border:1px solid rgba(248,113,113,.2);border-radius:var(--rs);padding:12px 16px;margin-top:8px;font-size:13px;color:var(--err);line-height:1.55}
+
+/* ═══════ SUJETS CORRIGÉS ═══════ */
+.suj-list{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.suj-item{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--r);padding:16px 18px;cursor:pointer;transition:all .15s}
+.suj-item:active{transform:scale(.98)}
+.suj-item.on{border-color:var(--acc3)}
+.suj-year{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--acc);margin-bottom:4px}
+.suj-title{font-size:14px;font-weight:600;line-height:1.35}
+.suj-detail{display:none;animation:fadeIn .25s ease}
+.suj-detail.on{display:block}
+.suj-section{margin-top:20px}
+.suj-section h3{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--t3);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.suj-section h3::before{content:'';width:3px;height:14px;background:var(--acc);border-radius:2px}
+.suj-part{background:var(--bg3);border-radius:var(--rs);padding:16px;margin-bottom:10px}
+.suj-part-title{font-size:13px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.suj-part-num{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.sp1 .suj-part-num{background:var(--teal2);color:var(--teal)}
+.sp2 .suj-part-num{background:var(--coral2);color:var(--coral)}
+.sp3 .suj-part-num{background:var(--purple2);color:var(--purple)}
+.suj-part p{font-size:13px;color:var(--t2);line-height:1.6}
+.suj-part .ref{font-size:12px;color:var(--acc);margin-top:6px}
+.suj-intro-ex,.suj-ccl-ex{background:var(--bg3);border-radius:var(--rs);padding:16px;font-size:13px;color:var(--t2);line-height:1.6;margin-top:8px}
+.suj-intro-ex b,.suj-ccl-ex b{color:var(--t1);font-weight:600}
+</style>
 </head>
 <body>
-<p>Redirection vers Philo Coach...</p>
+
+<div class="app">
+<div class="app-header">
+  <div class="app-logo">Philo <span>Coach</span></div>
+  <div class="app-sub">Bac Techno 2026 — Révisions interactives</div>
+</div>
+
+<nav class="nav" id="nav"></nav>
+
+<!-- ═══════ VIEW: FLASHCARDS ═══════ -->
+<div class="view on" id="v-flash">
+  <div class="fc-filters" id="fc-filters"></div>
+  <div class="fc-progress"><div class="fc-bar"><div class="fc-fill" id="fc-fill"></div></div><span class="fc-count" id="fc-count"></span></div>
+  <div class="card-wrap" id="card-wrap" onclick="flipCard()">
+    <div class="card-inner" id="card-inner">
+      <div class="card-face card-front" id="card-front"></div>
+      <div class="card-face card-back" id="card-back"></div>
+    </div>
+  </div>
+  <div class="fc-btns">
+    <button class="fc-btn fc-shuffle" onclick="shuffleCards()">Mélanger</button>
+    <button class="fc-btn fc-prev" onclick="prevCard()">← Préc.</button>
+    <button class="fc-btn fc-next" onclick="nextCard()">Suiv. →</button>
+  </div>
+</div>
+
+<!-- ═══════ VIEW: QUIZ ═══════ -->
+<div class="view" id="v-quiz">
+  <div id="quiz-container"></div>
+</div>
+
+<!-- ═══════ VIEW: MÉTHODE ═══════ -->
+<div class="view" id="v-method">
+  <div class="method-tabs" id="method-tabs"></div>
+  <div id="method-content"></div>
+</div>
+
+<!-- ═══════ VIEW: SUJETS CORRIGÉS ═══════ -->
+<div class="view" id="v-sujets">
+  <div id="sujets-container"></div>
+</div>
+</div>
+
+<script>
+/* ══════════════════════════════════════
+   NAVIGATION
+   ══════════════════════════════════════ */
+const tabs=[
+  {id:'v-flash',label:'Flashcards',icon:'🃏'},
+  {id:'v-quiz',label:'Quiz',icon:'🧠'},
+  {id:'v-method',label:'Méthode',icon:'✍️'},
+  {id:'v-sujets',label:'Corrigés',icon:'📝'}
+];
+const nav=document.getElementById('nav');
+tabs.forEach((t,i)=>{
+  const b=document.createElement('button');
+  b.className='nav-btn'+(i===0?' on':'');
+  b.textContent=t.icon+' '+t.label;
+  b.onclick=()=>{
+    document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));
+    document.getElementById(t.id).classList.add('on');
+  };
+  nav.appendChild(b);
+});
+
+/* ══════════════════════════════════════
+   FLASHCARDS DATA
+   ══════════════════════════════════════ */
+const flashcards=[
+{notion:"Liberté",a:"Sartre",w:"L'existentialisme est un humanisme",c:"L'homme est condamné à être libre.",t:"Même en situation de contrainte, l'homme choisit son attitude. La liberté est ontologique, on ne peut pas y échapper.",fg:"var(--purple)",bg:"var(--purple2)"},
+{notion:"Liberté",a:"Épictète",w:"Manuel",c:"Ce qui dépend de nous est libre par nature.",t:"Distinguer ce qui dépend de nous (jugement, volonté) et ce qui n'en dépend pas (corps, fortune). La liberté intérieure est inaliénable.",fg:"var(--purple)",bg:"var(--purple2)"},
+{notion:"Liberté",a:"Spinoza",w:"Éthique",c:"Les hommes se croient libres parce qu'ils ignorent les causes qui les déterminent.",t:"La liberté n'est pas l'absence de contrainte mais la compréhension de la nécessité. Le libre arbitre est une illusion.",fg:"var(--purple)",bg:"var(--purple2)"},
+{notion:"Liberté",a:"Rousseau",w:"Du contrat social",c:"L'obéissance à la loi qu'on s'est prescrite est liberté.",t:"La liberté civile > la liberté naturelle. Le contrat social transforme la soumission en autonomie collective.",fg:"var(--purple)",bg:"var(--purple2)"},
+{notion:"Liberté",a:"Kant",w:"Fondements de la métaphysique des mœurs",c:"Agis selon la maxime que tu voudrais voir érigée en loi universelle.",t:"L'autonomie morale : être libre c'est obéir à la loi que la raison se donne. Liberté = autonomie, pas caprice.",fg:"var(--purple)",bg:"var(--purple2)"},
+{notion:"Justice",a:"Rawls",w:"Théorie de la justice",c:"L'injustice n'est tolérable que pour éviter une injustice plus grande.",t:"Le voile d'ignorance : une société juste est celle qu'on accepterait sans connaître sa position sociale.",fg:"var(--teal)",bg:"var(--teal2)"},
+{notion:"Justice",a:"Thoreau",w:"La désobéissance civile",c:"Sous un gouvernement qui emprisonne injustement, la place d'un homme juste est en prison.",t:"Devoir moral de désobéir quand la loi est immorale. L'individu est le juge ultime de la loi.",fg:"var(--teal)",bg:"var(--teal2)"},
+{notion:"Justice",a:"Platon",w:"Criton",c:"Il ne faut jamais commettre l'injustice, même en réponse à l'injustice.",t:"Socrate refuse de fuir sa condamnation : désobéir détruirait le pacte social qui nous lie tous.",fg:"var(--teal)",bg:"var(--teal2)"},
+{notion:"Art",a:"Kant",w:"Critique de la faculté de juger",c:"Le génie est le talent qui donne les règles à l'art.",t:"Le beau plaît sans concept. Le génie crée des règles nouvelles sans les suivre mécaniquement.",fg:"var(--coral)",bg:"var(--coral2)"},
+{notion:"Art",a:"Hegel",w:"Esthétique",c:"L'art est la manifestation sensible de l'idée.",t:"L'art est une forme de connaissance : il révèle l'esprit à lui-même à travers la matière sensible.",fg:"var(--coral)",bg:"var(--coral2)"},
+{notion:"Art",a:"Nietzsche",w:"Humain, trop humain",c:"L'art nous est donné pour ne pas mourir de la vérité.",t:"L'art n'est pas inspiration divine mais travail acharné. Tous les grands hommes sont de grands travailleurs.",fg:"var(--coral)",bg:"var(--coral2)"},
+{notion:"Art",a:"Aristote",w:"Poétique",c:"L'art est mimèsis.",t:"L'art est imitation créatrice du réel. La catharsis : le spectacle tragique purge les passions du spectateur.",fg:"var(--coral)",bg:"var(--coral2)"},
+{notion:"Nature",a:"Rousseau",w:"Discours sur l'inégalité",c:"L'homme est né libre, et partout il est dans les fers.",t:"L'état de nature = bonheur et innocence. C'est la civilisation qui corrompt l'homme, pas la nature.",fg:"var(--ok)",bg:"var(--ok2)"},
+{notion:"Nature",a:"Jonas",w:"Le principe responsabilité",c:"Agis de sorte que les effets de ton action soient compatibles avec la permanence d'une vie humaine sur Terre.",t:"La technique moderne crée des effets irréversibles. Nous avons un devoir envers les générations futures.",fg:"var(--ok)",bg:"var(--ok2)"},
+{notion:"Nature",a:"Descartes",w:"Discours de la méthode",c:"Nous rendre comme maîtres et possesseurs de la nature.",t:"La science et la technique doivent soumettre la nature au service du bien-être humain.",fg:"var(--ok)",bg:"var(--ok2)"},
+{notion:"Technique",a:"Marx",w:"Manuscrits de 1844",c:"Le travail aliéné fait de l'activité vitale un simple moyen d'existence.",t:"L'ouvrier ne se reconnaît pas dans son produit. Le travail capitaliste dépossède l'homme de son humanité.",fg:"var(--blue)",bg:"var(--blue2)"},
+{notion:"Technique",a:"Ellul",w:"Le système technicien",c:"Ce n'est plus l'homme qui choisit la technique, c'est la technique qui choisit l'homme.",t:"La technique est devenue un système autonome qui échappe au contrôle humain et s'impose comme une fatalité.",fg:"var(--blue)",bg:"var(--blue2)"},
+{notion:"Technique",a:"Hegel",w:"Phénoménologie de l'esprit",c:"C'est par le travail que la conscience parvient à elle-même.",t:"Dialectique maître/esclave : l'esclave, par le travail, transforme la nature et accède à la conscience de soi.",fg:"var(--blue)",bg:"var(--blue2)"},
+{notion:"Vérité",a:"Descartes",w:"Méditations métaphysiques",c:"Je pense, donc je suis.",t:"Le doute méthodique : ne tenir pour vrai que ce qui est clair et distinct. Le Cogito = première vérité indubitable.",fg:"var(--blue)",bg:"var(--blue2)"},
+{notion:"Vérité",a:"Platon",w:"République VII",c:"Allégorie de la caverne",t:"Sortir de la caverne = accéder à la vérité par un effort douloureux de libération des apparences et de l'opinion.",fg:"var(--blue)",bg:"var(--blue2)"},
+{notion:"Société",a:"Aristote",w:"Politique",c:"L'homme est par nature un animal politique.",t:"Vivre en société est naturel. L'homme ne s'accomplit pleinement que dans la cité, par la parole et l'action.",fg:"var(--pink)",bg:"var(--pink2)"},
+{notion:"Société",a:"Hobbes",w:"Léviathan",c:"L'homme est un loup pour l'homme.",t:"L'état de nature = guerre de tous contre tous. Le contrat social crée l'État pour garantir la sécurité.",fg:"var(--pink)",bg:"var(--pink2)"},
+{notion:"Bonheur",a:"Aristote",w:"Éthique à Nicomaque",c:"Le bonheur est le souverain bien.",t:"L'eudaimonia est la fin ultime de toute action humaine. Il s'atteint par la vertu et l'activité de l'âme conforme à la raison.",fg:"var(--pink)",bg:"var(--pink2)"},
+{notion:"Bonheur",a:"Épicure",w:"Lettre à Ménécée",c:"La mort n'est rien pour nous.",t:"Le bonheur = ataraxie (absence de trouble). Satisfaire les désirs naturels et nécessaires suffit.",fg:"var(--pink)",bg:"var(--pink2)"},
+];
+
+let fcFilter='Tous',fcIdx=0,fcDeck=[...flashcards];
+const notionSet=[...new Set(flashcards.map(f=>f.notion))];
+
+function buildFilters(){
+  const el=document.getElementById('fc-filters');
+  el.innerHTML='';
+  ['Tous',...notionSet].forEach(n=>{
+    const b=document.createElement('button');
+    b.className='fc-ftag'+(n===fcFilter?' on':'');
+    b.textContent=n;
+    b.onclick=()=>{fcFilter=n;fcIdx=0;filterDeck();buildFilters();renderCard()};
+    el.appendChild(b);
+  });
+}
+function filterDeck(){
+  fcDeck=fcFilter==='Tous'?[...flashcards]:flashcards.filter(f=>f.notion===fcFilter);
+}
+function shuffleCards(){fcDeck.sort(()=>Math.random()-.5);fcIdx=0;renderCard()}
+function flipCard(){document.getElementById('card-wrap').classList.toggle('flipped')}
+function nextCard(){if(fcIdx<fcDeck.length-1){fcIdx++;renderCard()}}
+function prevCard(){if(fcIdx>0){fcIdx--;renderCard()}}
+function renderCard(){
+  const wrap=document.getElementById('card-wrap');
+  wrap.classList.remove('flipped');
+  const f=fcDeck[fcIdx];if(!f)return;
+  document.getElementById('fc-fill').style.width=((fcIdx+1)/fcDeck.length*100)+'%';
+  document.getElementById('fc-count').textContent=(fcIdx+1)+'/'+fcDeck.length;
+  document.getElementById('card-front').innerHTML=`
+    <div class="card-label" style="color:var(--t3)">Auteur</div>
+    <div class="card-notion" style="background:${f.bg};color:${f.fg}">${f.notion}</div>
+    <div class="card-author">${f.a}</div>
+    <div class="card-work">${f.w}</div>
+    <div class="card-hint">Touche pour révéler →</div>`;
+  document.getElementById('card-back').innerHTML=`
+    <div class="card-label" style="color:var(--acc)">Citation & Thèse</div>
+    <div class="card-notion" style="background:${f.bg};color:${f.fg}">${f.notion}</div>
+    <div class="card-cite">« ${f.c} »</div>
+    <div class="card-these">${f.t}</div>`;
+}
+buildFilters();filterDeck();renderCard();
+
+/* ══════════════════════════════════════
+   QUIZ DATA
+   ══════════════════════════════════════ */
+const quizData=[
+{q:"Qui a dit « L'homme est condamné à être libre » ?",opts:["Spinoza","Sartre","Rousseau","Kant"],ans:1,exp:"Sartre, dans L'existentialisme est un humanisme : même en situation de contrainte, l'homme choisit toujours son attitude."},
+{q:"Quel philosophe utilise l'allégorie de la caverne pour parler de la vérité ?",opts:["Aristote","Descartes","Platon","Nietzsche"],ans:2,exp:"Platon, dans République VII : sortir de la caverne représente le passage de l'opinion (les ombres) à la vérité (le soleil)."},
+{q:"Pour Rousseau, qu'est-ce que la liberté civile ?",opts:["L'absence de toute contrainte","L'obéissance à la loi qu'on s'est prescrite","Le droit de faire ce qu'on veut","La soumission au plus fort"],ans:1,exp:"Du contrat social : la liberté civile dépasse la liberté naturelle. Obéir à la loi collective qu'on a votée, c'est être libre."},
+{q:"Quel auteur affirme que la technique est devenue un système autonome ?",opts:["Marx","Jonas","Ellul","Descartes"],ans:2,exp:"Jacques Ellul, dans Le système technicien : la technique s'impose à l'homme comme une fatalité, elle n'est plus un simple outil."},
+{q:"La catharsis chez Aristote, c'est :",opts:["L'imitation de la nature","La purge des passions par le spectacle","Le plaisir esthétique pur","La recherche de la vérité par l'art"],ans:1,exp:"Aristote, Poétique : en regardant une tragédie, le spectateur ressent pitié et crainte, ce qui le libère de ces passions."},
+{q:"Qui défend l'idée de désobéissance civile comme devoir moral ?",opts:["Platon","Hobbes","Thoreau","Hegel"],ans:2,exp:"Thoreau, La désobéissance civile : quand la loi est immorale (ex : esclavage), il est du devoir du citoyen de désobéir."},
+{q:"Quel est le « voile d'ignorance » de Rawls ?",opts:["Ne pas connaître sa position sociale pour juger la justice","Ignorer les lois pour être libre","Cacher la vérité pour protéger les faibles","Oublier le passé pour avancer"],ans:0,exp:"Théorie de la justice : si on ne sait pas quelle place on occupera dans la société, on choisira des règles justes pour tous."},
+{q:"Pour Kant, le génie en art :",opts:["Suit les règles classiques","Donne les règles à l'art","N'a aucune règle","Copie la nature"],ans:1,exp:"Critique de la faculté de juger, §46 : le génie crée de nouvelles règles sans les suivre mécaniquement. Il est original sans être absurde."},
+{q:"Le Cogito de Descartes (« je pense donc je suis ») est :",opts:["Une opinion personnelle","Une vérité probable","La première vérité indubitable","Une hypothèse à vérifier"],ans:2,exp:"Méditations métaphysiques : après avoir douté de tout, Descartes découvre que le fait même de douter prouve qu'il pense, donc qu'il existe."},
+{q:"Pour Jonas, notre devoir envers la nature vient de :",opts:["La beauté de la nature","Les effets irréversibles de la technique moderne","La peur de la nature","Le respect des traditions"],ans:1,exp:"Le principe responsabilité : la puissance technologique crée des risques planétaires. Nous devons préserver les conditions de vie des générations futures."},
+{q:"Dans la dialectique maître/esclave de Hegel, qui accède à la conscience de soi ?",opts:["Le maître","L'esclave","Les deux également","Ni l'un ni l'autre"],ans:1,exp:"Phénoménologie de l'esprit : l'esclave, par le travail, transforme la nature et se transforme lui-même. Le maître, lui, stagne dans la jouissance."},
+{q:"Spinoza pense que la liberté est :",opts:["L'absence de toute contrainte","Une illusion complète","La compréhension de ce qui nous détermine","Un don de Dieu"],ans:2,exp:"Éthique : nous croyons être libres car nous ignorons les causes. La vraie liberté est la connaissance adéquate de la nécessité."},
+{q:"Quel sujet est tombé au bac techno 2025 en Métropole ?",opts:["L'art nous apprend-il quelque chose ?","Sommes-nous libres en toutes circonstances ?","La nature est-elle hostile à l'homme ?","Est-il juste de défendre ses droits par tous les moyens ?"],ans:1,exp:"Bac techno Métropole 2025 : les deux dissertations étaient « Sommes-nous libres en toutes circonstances ? » et « Avons-nous besoin d'art ? »."},
+{q:"Pour Aristote, l'homme est :",opts:["Un loup pour l'homme","Condamné à être libre","Un animal politique","Maître et possesseur de la nature"],ans:2,exp:"Politique : l'homme est un zoon politikon. Il ne s'accomplit pleinement que dans la cité, par la parole et l'action politique."},
+{q:"Quelle est la structure attendue d'une dissertation de philo ?",opts:["Intro + 2 parties + conclusion","Intro + 3 parties dialectiques + conclusion","Intro + résumé de cours + conclusion","3 exemples + conclusion"],ans:1,exp:"Plan dialectique : I. Thèse — II. Antithèse — III. Dépassement. Chaque partie : argument + auteur + exemple. Intro : accroche + définitions + problématique + plan."},
+{q:"La notion la plus tombée au bac techno (2021-2025) est :",opts:["L'art","La vérité","La liberté","Le bonheur"],ans:2,exp:"La liberté apparaît dans 8 sujets sur 10 entre 2021 et 2025 au bac technologique Métropole. C'est la notion incontournable."},
+{q:"Qui a écrit « la fin ne justifie pas les moyens » en philosophie morale ?",opts:["Rawls","Locke","Kant","Thoreau"],ans:2,exp:"Kant, Métaphysique des mœurs : l'action morale se juge à son intention (le devoir), pas à ses conséquences. On ne peut pas utiliser n'importe quel moyen."},
+{q:"Hobbes pense que l'état de nature est :",opts:["Un paradis perdu","Une guerre de tous contre tous","Un état de bonheur","Une société primitive"],ans:1,exp:"Léviathan : sans État, les hommes sont en conflit permanent. Le contrat social crée le Léviathan (l'État) pour garantir la paix et la sécurité."},
+{q:"Quelle est la thèse de Bergson sur l'art ?",opts:["L'art est inutile","L'artiste voit ce que nous ne percevons plus","L'art doit imiter la nature","L'art est une technique comme une autre"],ans:1,exp:"Le rire : l'habitude nous empêche de voir le réel. L'artiste lève ce voile et nous montre la réalité dans sa singularité."},
+{q:"Comment s'appelle l'œuvre d'Adam Smith tombée en commentaire au bac techno 2023 ET 2025 ?",opts:["La richesse des nations","Du contrat social","Théorie des sentiments moraux","Éthique à Nicomaque"],ans:2,exp:"Théorie des sentiments moraux (1759) : Smith y traite de la justice et de la sympathie morale. Ce texte est tombé deux fois en commentaire au bac techno."},
+];
+
+let qIdx=0,score=0,answered=false;
+function renderQuizIntro(){
+  document.getElementById('quiz-container').innerHTML=`
+    <div class="quiz-intro">
+      <h2>Teste tes connaissances</h2>
+      <p>20 questions sur les notions, auteurs, citations et sujets du bac. Prêt ?</p>
+      <button class="quiz-start" onclick="startQuiz()">Commencer le quiz</button>
+    </div>`;
+}
+function startQuiz(){qIdx=0;score=0;quizData.sort(()=>Math.random()-.5);renderQ()}
+function renderQ(){
+  if(qIdx>=quizData.length){renderScore();return}
+  answered=false;
+  const q=quizData[qIdx];
+  const el=document.getElementById('quiz-container');
+  el.innerHTML=`
+    <div class="q-card">
+      <div class="q-num">Question ${qIdx+1}/${quizData.length}</div>
+      <div class="q-text">${q.q}</div>
+      <div class="q-opts" id="q-opts">${q.opts.map((o,i)=>`<button class="q-opt" data-i="${i}" onclick="answerQ(${i})">${o}</button>`).join('')}</div>
+      <div class="q-explain" id="q-exp">${q.exp}</div>
+      <button class="q-next" id="q-next" onclick="qIdx++;renderQ()">Question suivante →</button>
+    </div>`;
+}
+function answerQ(i){
+  if(answered)return;answered=true;
+  const q=quizData[qIdx];
+  const btns=document.querySelectorAll('.q-opt');
+  btns.forEach((b,j)=>{
+    if(j===q.ans)b.classList.add('correct');
+    else if(j===i&&i!==q.ans)b.classList.add('wrong');
+    else b.classList.add('dim');
+  });
+  if(i===q.ans)score++;
+  document.getElementById('q-exp').classList.add('show');
+  document.getElementById('q-next').classList.add('show');
+}
+function renderScore(){
+  const pct=Math.round(score/quizData.length*100);
+  let msg,detail;
+  if(pct>=80){msg="Excellent !";detail="Tu maîtrises bien les notions et les auteurs. Continue comme ça."}
+  else if(pct>=60){msg="Bien joué !";detail="De bonnes bases, mais revois les fiches des notions où tu as hésité."}
+  else if(pct>=40){msg="Pas mal, mais…";detail="Reprends les flashcards et concentre-toi sur les auteurs et citations à connaître."}
+  else{msg="À retravailler";detail="Pas de panique ! Relis les fiches notion par notion, puis refais le quiz."}
+  document.getElementById('quiz-container').innerHTML=`
+    <div class="quiz-score">
+      <div class="score-circle"><div class="score-num">${score}/${quizData.length}</div><div class="score-label">${pct}%</div></div>
+      <div class="score-msg">${msg}</div>
+      <div class="score-detail">${detail}</div>
+      <button class="quiz-start" onclick="startQuiz()">Recommencer</button>
+    </div>`;
+}
+renderQuizIntro();
+
+/* ══════════════════════════════════════
+   MÉTHODE
+   ══════════════════════════════════════ */
+const methodSections=[
+{id:'intro',label:"L'introduction",content:`
+<div class="m-card">
+  <div class="m-tag" style="background:var(--teal2);color:var(--teal)">4 étapes — 15 minutes</div>
+  <div class="m-step"><div class="m-dot m-dot-1">1</div><div class="m-body"><h4>L'accroche</h4><p>Un fait, une citation ou une situation concrète qui amène naturellement le sujet. Pas de « depuis la nuit des temps ».</p></div></div>
+  <div class="m-step"><div class="m-dot m-dot-2">2</div><div class="m-body"><h4>Définition des termes</h4><p>Définis chaque mot important du sujet. C'est là que tu montres que tu as compris la question.</p></div></div>
+  <div class="m-step"><div class="m-dot m-dot-3">3</div><div class="m-body"><h4>La problématique</h4><p>Reformule le sujet en une question précise qui montre la tension, le paradoxe. Ce n'est PAS une paraphrase du sujet.</p></div></div>
+  <div class="m-step"><div class="m-dot m-dot-4">4</div><div class="m-body"><h4>Annonce du plan</h4><p>Présente les 3 moments de ta réflexion en une ou deux phrases. Pas de « dans un premier temps… ».</p></div></div>
+</div>
+<div class="m-example"><b>Exemple</b> — Sujet : « Sommes-nous libres en toutes circonstances ? »<br><br><b>Accroche :</b> Un prisonnier qui choisit de résister mentalement à ses geôliers exerce-t-il encore sa liberté ?<br><br><b>Définitions :</b> « Libres » = capacité d'agir selon sa volonté, sans contrainte. « En toutes circonstances » = même face à des obstacles physiques, sociaux, psychologiques.<br><br><b>Problématique :</b> La liberté humaine est-elle une donnée permanente de notre condition, ou dépend-elle des conditions extérieures dans lesquelles nous nous trouvons ?<br><br><b>Plan :</b> Nous verrons d'abord que la liberté semble constitutive de l'être humain, puis que des déterminismes la limitent, avant de montrer que la liberté véritable se situe peut-être dans la conscience que nous prenons de ces limites.</div>
+<div class="m-warn">⚠ Piège classique : ne jamais commencer par « De tout temps, l'homme s'est interrogé sur… ». C'est un cliché repéré par tous les correcteurs.</div>
+`},
+{id:'plan',label:'Le plan',content:`
+<div class="m-card">
+  <div class="m-tag" style="background:var(--coral2);color:var(--coral)">Structure dialectique</div>
+  <div class="m-step"><div class="m-dot m-dot-1">I</div><div class="m-body"><h4>Thèse — La réponse qui semble évidente</h4><p>C'est le « oui » spontané (ou le « non »). Tu défends une première position avec un argument + un auteur + un exemple concret.</p></div></div>
+  <div class="m-step"><div class="m-dot m-dot-2">II</div><div class="m-body"><h4>Antithèse — L'objection</h4><p>Tu montres les limites de la thèse. Un autre auteur qui s'oppose, un contre-exemple. Tu ne te contredis pas : tu approfondis.</p></div></div>
+  <div class="m-step"><div class="m-dot m-dot-3">III</div><div class="m-body"><h4>Dépassement — La synthèse</h4><p>Tu dépasses l'opposition. Tu reformules le problème. C'est la partie la plus valorisée par les correcteurs.</p></div></div>
+</div>
+<div class="m-card">
+  <div class="m-tag" style="background:var(--acc2);color:var(--acc)">Anatomie d'une partie</div>
+  <div class="m-step"><div class="m-dot m-dot-1">A</div><div class="m-body"><h4>Argument</h4><p>Une idée claire, formulée en une phrase. C'est la colonne vertébrale de ta partie.</p></div></div>
+  <div class="m-step"><div class="m-dot m-dot-2">B</div><div class="m-body"><h4>Référence philosophique</h4><p>Un auteur + le titre de l'œuvre + sa thèse résumée en 1-2 phrases. Ne récite pas le cours : explique pourquoi cet auteur éclaire le sujet.</p></div></div>
+  <div class="m-step"><div class="m-dot m-dot-3">C</div><div class="m-body"><h4>Exemple concret</h4><p>Un fait historique, une œuvre d'art, une expérience quotidienne. L'exemple illustre, il ne remplace pas l'argument.</p></div></div>
+  <div class="m-step"><div class="m-dot m-dot-4">D</div><div class="m-body"><h4>Transition</h4><p>1-2 phrases qui montrent la limite de ce que tu viens de dire et annoncent la suite. C'est ce qui fait la différence entre un 10 et un 14.</p></div></div>
+</div>
+<div class="m-example"><b>Modèle de transition (fin du I → II) :</b><br><br>« Cependant, si la liberté était vraiment totale et permanente, comment expliquer que tant d'hommes se sentent prisonniers de leurs conditions ? C'est ce que Spinoza nous invite à examiner. »</div>
+<div class="m-warn">⚠ Ne jamais écrire « Dans une première partie… dans une deuxième partie… ». Ça alourdit et les correcteurs détestent. La transition suffit à guider le lecteur.</div>
+`},
+{id:'conclusion',label:'La conclusion',content:`
+<div class="m-card">
+  <div class="m-tag" style="background:var(--purple2);color:var(--purple)">2 étapes — 10 minutes</div>
+  <div class="m-step"><div class="m-dot m-dot-1">1</div><div class="m-body"><h4>La réponse à la problématique</h4><p>Résume ton parcours en 3-4 lignes. Donne une réponse claire et nuancée. Ne répète pas le plan mot pour mot : reformule avec du recul.</p></div></div>
+  <div class="m-step"><div class="m-dot m-dot-2">2</div><div class="m-body"><h4>L'ouverture</h4><p>Élargis vers une question nouvelle que ton sujet soulève. L'ouverture montre que tu es capable de prolonger la réflexion.</p></div></div>
+</div>
+<div class="m-example"><b>Exemple</b> — Sujet : « Sommes-nous libres en toutes circonstances ? »<br><br><b>Réponse :</b> Ainsi, si la liberté humaine ne peut s'exercer sans limites face aux déterminismes naturels et sociaux, elle n'en est pas moins une dimension constitutive de notre existence : c'est dans la conscience de ces limites, et dans le choix de notre attitude face à elles, que se joue notre liberté véritable.<br><br><b>Ouverture :</b> Dès lors, on peut se demander si la liberté ne comporte pas aussi une responsabilité : être libre en toutes circonstances, n'est-ce pas aussi être responsable en toutes circonstances ?</div>
+<div class="m-warn">⚠ Jamais d'ouverture « bateau » du type « Cette question restera toujours d'actualité ». L'ouverture doit poser une vraie question nouvelle.</div>
+`},
+{id:'temps',label:'Le jour J',content:`
+<div class="m-card">
+  <div class="m-tag" style="background:var(--acc2);color:var(--acc)">Gestion des 4 heures</div>
+  <div class="m-step"><div class="m-dot m-dot-1">15'</div><div class="m-body"><h4>Lecture + analyse du sujet</h4><p>Lis les 3 sujets. Choisis celui où tu as le plus d'auteurs. Définis chaque terme. Identifie la tension (le « mais »).</p></div></div>
+  <div class="m-step"><div class="m-dot m-dot-2">20'</div><div class="m-body"><h4>Brouillon du plan</h4><p>Note tes 3 parties, les auteurs, les exemples. Rédige la problématique et l'annonce du plan au brouillon. Ne rédige PAS tout au brouillon.</p></div></div>
+  <div class="m-step"><div class="m-dot m-dot-3">2h45</div><div class="m-body"><h4>Rédaction</h4><p>Introduction (rédigée au propre directement). Puis I, II, III avec transitions. Conclusion. Écris lisiblement, saute des lignes entre les parties.</p></div></div>
+  <div class="m-step"><div class="m-dot m-dot-4">20'</div><div class="m-body"><h4>Relecture</h4><p>Orthographe, accords, ponctuation. Vérifie que chaque partie a bien : argument + auteur + exemple + transition.</p></div></div>
+</div>
+<div class="m-card">
+  <div class="m-tag" style="background:var(--err2);color:var(--err)">Check-list de relecture</div>
+  <div class="m-step"><div class="m-dot" style="background:var(--ok2);color:var(--ok)">✓</div><div class="m-body"><p>Mon intro contient : accroche + définitions + problématique + plan ?</p></div></div>
+  <div class="m-step"><div class="m-dot" style="background:var(--ok2);color:var(--ok)">✓</div><div class="m-body"><p>Chaque partie cite au moins un philosophe avec le titre de l'œuvre ?</p></div></div>
+  <div class="m-step"><div class="m-dot" style="background:var(--ok2);color:var(--ok)">✓</div><div class="m-body"><p>J'ai une transition entre chaque partie ?</p></div></div>
+  <div class="m-step"><div class="m-dot" style="background:var(--ok2);color:var(--ok)">✓</div><div class="m-body"><p>Ma conclusion répond à la problématique et ouvre sur une nouvelle question ?</p></div></div>
+  <div class="m-step"><div class="m-dot" style="background:var(--ok2);color:var(--ok)">✓</div><div class="m-body"><p>Je n'ai pas commencé par « De tout temps » ni terminé par « restera toujours d'actualité » ?</p></div></div>
+</div>
+`}
+];
+
+const mtabs=document.getElementById('method-tabs');
+const mcont=document.getElementById('method-content');
+methodSections.forEach((s,i)=>{
+  const b=document.createElement('button');
+  b.className='mt-btn'+(i===0?' on':'');
+  b.textContent=s.label;
+  b.onclick=()=>{
+    mtabs.querySelectorAll('.mt-btn').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    mcont.querySelectorAll('.method-section').forEach(x=>x.classList.remove('on'));
+    document.getElementById('ms-'+s.id).classList.add('on');
+  };
+  mtabs.appendChild(b);
+  const div=document.createElement('div');
+  div.className='method-section'+(i===0?' on':'');
+  div.id='ms-'+s.id;
+  div.innerHTML=s.content;
+  mcont.appendChild(div);
+});
+
+/* ══════════════════════════════════════
+   SUJETS CORRIGÉS
+   ══════════════════════════════════════ */
+const sujets=[
+{year:"2025",title:"Sommes-nous libres en toutes circonstances ?",
+intro:`<b>Accroche :</b> Viktor Frankl, psychiatre survivant des camps de concentration, écrivait que même dans les pires conditions, l'homme conserve la liberté de choisir son attitude.<br><br><b>Définitions :</b> « Libres » : capacité d'agir selon sa volonté. « En toutes circonstances » : même face aux contraintes physiques, sociales, psychologiques les plus extrêmes.<br><br><b>Problématique :</b> La liberté est-elle une donnée permanente de la condition humaine, ou est-elle conditionnée par les circonstances ?<br><br><b>Plan :</b> Nous verrons que la liberté semble constitutive de l'homme (I), puis que des déterminismes la limitent (II), avant de montrer que la vraie liberté réside dans la conscience de ces limites (III).`,
+parts:[
+{n:"I",title:"La liberté est constitutive de l'être humain",
+body:"Pour Sartre, l'homme est « condamné à être libre ». Même un prisonnier choisit son attitude : résistance, résignation, espoir. La liberté est ontologique, elle définit notre condition. Épictète, esclave puis philosophe, illustre cette thèse : la liberté intérieure persiste quand la liberté extérieure est supprimée.",
+ref:"Sartre, L'existentialisme est un humanisme · Épictète, Manuel",
+transition:"Cependant, affirmer une liberté totale en toutes circonstances ne revient-il pas à nier le poids des déterminismes réels qui pèsent sur nos choix ?"},
+{n:"II",title:"Des déterminismes limitent la liberté",
+body:"Spinoza montre que nous nous croyons libres parce que nous ignorons les causes qui nous déterminent. Nos choix sont influencés par notre éducation, notre milieu social, nos affects. Bourdieu prolonge cette idée : l'habitus (dispositions acquises) oriente nos comportements sans que nous en ayons conscience. La liberté « totale » serait alors une illusion.",
+ref:"Spinoza, Éthique · Bourdieu, La distinction",
+transition:"Pourtant, si la liberté n'est qu'illusion, comment expliquer que certains hommes parviennent à s'affranchir de leurs conditions ? La liberté ne réside-t-elle pas justement dans cette prise de conscience ?"},
+{n:"III",title:"La liberté se conquiert dans la conscience des limites",
+body:"Épictète nous apprend à distinguer ce qui dépend de nous et ce qui n'en dépend pas. La liberté n'est pas l'absence de contrainte mais le choix de notre attitude face à elle. Kant complète : être libre, c'est obéir à la loi morale que la raison se donne. La liberté véritable est autonomie, pas toute-puissance.",
+ref:"Épictète, Manuel · Kant, Fondements de la métaphysique des mœurs"},
+],
+conclusion:`<b>Réponse :</b> La liberté humaine ne peut s'exercer sans limites, mais elle n'en est pas moins une dimension constitutive de notre existence. C'est dans la conscience de nos déterminismes et dans le choix de notre attitude que se joue notre liberté véritable.<br><br><b>Ouverture :</b> Dès lors, si nous sommes libres même dans la contrainte, cette liberté ne comporte-t-elle pas une responsabilité morale permanente envers nous-mêmes et envers les autres ?`
+},
+{year:"2025",title:"Avons-nous besoin d'art ?",
+intro:`<b>Accroche :</b> Pendant le confinement de 2020, des millions de personnes se sont tournées vers la musique, la littérature, le cinéma — comme si l'art devenait soudain aussi vital que la nourriture.<br><br><b>Définitions :</b> « Besoin » : nécessité vitale ou aspiration profonde. « Art » : activité de création d'œuvres à dimension esthétique, qui dépasse la simple utilité.<br><br><b>Problématique :</b> L'art répond-il à un besoin fondamental de l'existence humaine, ou n'est-il qu'un luxe superflu réservé à ceux qui ont satisfait leurs besoins premiers ?<br><br><b>Plan :</b> Nous examinerons d'abord en quoi l'art semble superflu (I), puis en quoi il répond à un besoin profond (II), avant de montrer qu'il transforme notre rapport au monde (III).`,
+parts:[
+{n:"I",title:"L'art semble superflu face aux besoins vitaux",
+body:"Platon, dans République X, critique l'art comme imitation d'imitation : il éloigne du vrai et ne nourrit pas. Face à la faim, au froid, à la maladie, l'art paraît un luxe. Les besoins physiologiques (Maslow) passent en premier. On peut survivre sans tableau ni concert.",
+ref:"Platon, République X · Maslow, hiérarchie des besoins",
+transition:"Pourtant, même les sociétés les plus démunies ont produit de l'art. Les peintures rupestres de Lascaux datent de 20 000 ans — bien avant le confort matériel. N'est-ce pas le signe d'un besoin plus profond ?"},
+{n:"II",title:"L'art répond à un besoin fondamental",
+body:"Pour Aristote, l'art est mimèsis et catharsis : il nous permet de comprendre le monde et de purger nos émotions. Hegel va plus loin : l'art est une forme de connaissance, il révèle l'esprit à lui-même. L'homme a besoin de donner sens à son existence, et l'art répond à ce besoin de sens que ni la science ni la technique ne comblent.",
+ref:"Aristote, Poétique · Hegel, Esthétique",
+transition:"Mais au-delà de la connaissance et de l'émotion, l'art ne transforme-t-il pas notre perception même du réel ?"},
+{n:"III",title:"L'art transforme notre regard sur le monde",
+body:"Bergson montre que l'habitude nous rend aveugles au réel. L'artiste, lui, voit ce que nous ne percevons plus : il lève le voile. Proust écrit que l'art est « un instrument de vision ». En ce sens, l'art n'est pas un besoin de survie mais un besoin d'humanité : sans lui, nous vivons sans vraiment voir.",
+ref:"Bergson, Le rire · Proust, Le temps retrouvé"},
+],
+conclusion:`<b>Réponse :</b> Si l'art n'est pas un besoin biologique, il répond à une aspiration profondément humaine : donner sens à l'existence, exprimer et comprendre nos émotions, et surtout voir le monde autrement. En ce sens, oui, nous avons besoin d'art — non pour survivre, mais pour vivre pleinement.<br><br><b>Ouverture :</b> Reste à se demander si, à l'ère des images de synthèse et de l'intelligence artificielle, l'art conserve cette capacité de nous révéler le réel — ou s'il risque de devenir un simple divertissement technique.`
+},
+{year:"2024",title:"La nature est-elle hostile à l'homme ?",
+intro:`<b>Accroche :</b> Tremblements de terre, pandémies, tempêtes — la nature semble parfois se déchaîner contre l'humanité. Mais peut-on vraiment lui prêter une intention ?<br><br><b>Définitions :</b> « Nature » : ensemble de ce qui existe indépendamment de l'action humaine. « Hostile » : qui manifeste de l'agressivité, de l'opposition.<br><br><b>Problématique :</b> La nature s'oppose-t-elle délibérément à l'homme, ou l'hostilité que nous lui attribuons n'est-elle qu'une projection de nos propres peurs ?<br><br><b>Plan :</b> La nature semble hostile (I), mais cette hostilité est une projection humaine (II), ce qui nous invite à repenser notre place dans la nature (III).`,
+parts:[
+{n:"I",title:"La nature semble hostile à l'homme",
+body:"Hobbes décrit l'état de nature comme une « guerre de tous contre tous ». Séismes, virus, prédateurs : la nature menace la survie. Lucrèce montre que la terre produit des dangers autant que des ressources. L'homme a dû inventer la technique pour se protéger d'un environnement menaçant.",
+ref:"Hobbes, Léviathan · Lucrèce, De la nature",
+transition:"Cependant, dire que la nature est « hostile » suppose qu'elle a une intention. Or, une tempête veut-elle nous nuire ?"},
+{n:"II",title:"L'hostilité est une projection humaine",
+body:"Spinoza rappelle que la nature n'a ni intention ni dessein. Elle n'est ni bonne ni mauvaise : c'est l'homme qui juge selon son utilité. Un tremblement de terre n'est pas « hostile » — il est indifférent. Nous projetons nos catégories morales sur un monde qui ne les connaît pas.",
+ref:"Spinoza, Éthique · Épicure, Lettre à Ménécée",
+transition:"Si la nature n'est pas hostile en soi, quelle est alors la responsabilité de l'homme dans les dommages qu'il subit ?"},
+{n:"III",title:"L'homme est nature — repenser notre relation",
+body:"Rousseau montre que c'est la civilisation qui corrompt notre rapport à la nature, pas la nature elle-même. Jonas ajoute que la technique moderne crée des risques inédits (pollution, climat). L'enjeu n'est plus de combattre la nature mais de vivre en responsabilité avec elle.",
+ref:"Rousseau, Discours sur l'inégalité · Jonas, Le principe responsabilité"},
+],
+conclusion:`<b>Réponse :</b> La nature n'est pas hostile à l'homme au sens d'une intention malveillante. C'est nous qui lui prêtons cette hostilité parce que nous la jugeons depuis nos besoins. En réalité, l'homme fait partie de la nature, et c'est en reconnaissant cette appartenance qu'il peut cesser de la percevoir comme une ennemie.<br><br><b>Ouverture :</b> N'est-ce pas finalement l'homme, par la puissance destructrice de sa technique, qui est devenu hostile à la nature ?`
+}
+];
+
+const sc=document.getElementById('sujets-container');
+let openSuj=-1;
+function renderSujets(){
+  sc.innerHTML='<div class="suj-list" id="suj-list"></div><div id="suj-detail-wrap"></div>';
+  const list=document.getElementById('suj-list');
+  sujets.forEach((s,i)=>{
+    const d=document.createElement('div');
+    d.className='suj-item'+(i===openSuj?' on':'');
+    d.innerHTML=`<div class="suj-year">${s.year} — Métropole</div><div class="suj-title">${s.title}</div>`;
+    d.onclick=()=>{openSuj=openSuj===i?-1:i;renderSujets()};
+    list.appendChild(d);
+  });
+  if(openSuj>=0)renderSujDetail(sujets[openSuj]);
+}
+function renderSujDetail(s){
+  const w=document.getElementById('suj-detail-wrap');
+  let html=`<div class="suj-detail on">`;
+  html+=`<div class="suj-section"><h3>Introduction rédigée</h3><div class="suj-intro-ex">${s.intro}</div></div>`;
+  html+=`<div class="suj-section"><h3>Développement</h3>`;
+  s.parts.forEach((p,i)=>{
+    html+=`<div class="suj-part sp${i+1}"><div class="suj-part-title"><span class="suj-part-num">${p.n}</span>${p.title}</div><p>${p.body}</p><div class="ref">📚 ${p.ref}</div>${p.transition?'<div class="m-example" style="margin-top:10px"><b>Transition :</b> '+p.transition+'</div>':''}</div>`;
+  });
+  html+=`</div>`;
+  html+=`<div class="suj-section"><h3>Conclusion rédigée</h3><div class="suj-ccl-ex">${s.conclusion}</div></div>`;
+  html+=`</div>`;
+  w.innerHTML=html;
+}
+renderSujets();
+</script>
 </body>
 </html>
