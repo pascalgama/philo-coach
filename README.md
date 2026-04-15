@@ -1,0 +1,1 @@
+This file is managed via the Vercel deploy. See public/index.html for the app source.
