@@ -152,7 +152,7 @@ button{font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparen
 <div class="app">
 <div class="app-header">
   <div class="app-logo">Philo <span>Coach</span></div>
-  <div class="app-sub">Bac Techno 2026 — Révisions interactives</div>
+  <div class="app-sub">Bac Techno 2026 — 10 ans de sujets (2016-2025)</div>
 </div>
 
 <nav class="nav" id="nav"></nav>
@@ -243,6 +243,14 @@ const flashcards=[
 {notion:"Société",a:"Hobbes",w:"Léviathan",c:"L'homme est un loup pour l'homme.",t:"L'état de nature = guerre de tous contre tous. Le contrat social crée l'État pour garantir la sécurité.",fg:"var(--pink)",bg:"var(--pink2)"},
 {notion:"Bonheur",a:"Aristote",w:"Éthique à Nicomaque",c:"Le bonheur est le souverain bien.",t:"L'eudaimonia est la fin ultime de toute action humaine. Il s'atteint par la vertu et l'activité de l'âme conforme à la raison.",fg:"var(--pink)",bg:"var(--pink2)"},
 {notion:"Bonheur",a:"Épicure",w:"Lettre à Ménécée",c:"La mort n'est rien pour nous.",t:"Le bonheur = ataraxie (absence de trouble). Satisfaire les désirs naturels et nécessaires suffit.",fg:"var(--pink)",bg:"var(--pink2)"},
+{notion:"Échanges",a:"Smith",w:"Richesse des nations",c:"Ce n'est pas de la bienveillance du boucher que nous attendons notre dîner, mais du soin qu'il apporte à ses intérêts.",t:"L'échange marchand repose sur l'intérêt personnel, pas sur la générosité. Le marché crée un ordre spontané.",fg:"var(--pink)",bg:"var(--pink2)"},
+{notion:"Échanges",a:"Mauss",w:"Essai sur le don",c:"Donner, recevoir, rendre.",t:"L'échange n'est pas que marchand. Le don crée du lien social, il oblige réciproquement et fonde la société.",fg:"var(--pink)",bg:"var(--pink2)"},
+{notion:"Raison",a:"Descartes",w:"Discours de la méthode",c:"Le bon sens est la chose du monde la mieux partagée.",t:"Tous les hommes possèdent la raison. Ce qui diffère, c'est la méthode pour bien la conduire.",fg:"var(--pink)",bg:"var(--pink2)"},
+{notion:"Raison",a:"Kant",w:"Critique de la raison pure",c:"Sapere aude ! Aie le courage de te servir de ton propre entendement.",t:"Les Lumières : sortir de la minorité intellectuelle. La raison doit s'exercer librement, sans tutelle extérieure.",fg:"var(--pink)",bg:"var(--pink2)"},
+{notion:"Culture",a:"Lévi-Strauss",w:"Race et histoire",c:"Le barbare, c'est d'abord l'homme qui croit à la barbarie.",t:"Toutes les cultures ont une valeur égale. Le vrai barbarisme est de refuser la diversité culturelle.",fg:"var(--coral)",bg:"var(--coral2)"},
+{notion:"Culture",a:"Montaigne",w:"Les Essais",c:"Chacun appelle barbarie ce qui n'est pas de son usage.",t:"Le relativisme culturel : nos jugements sur les autres cultures révèlent nos propres préjugés, pas la vérité.",fg:"var(--coral)",bg:"var(--coral2)"},
+{notion:"Bonheur",a:"Kant",w:"Critique de la raison pratique",c:"Le bonheur est un idéal de l'imagination, non de la raison.",t:"Le bonheur ne peut pas être le fondement de la morale car il est subjectif et incertain. Le devoir prime.",fg:"var(--pink)",bg:"var(--pink2)"},
+{notion:"Technique",a:"Descartes",w:"Discours de la méthode",c:"Nous rendre comme maîtres et possesseurs de la nature.",t:"La technique comme projet de domination rationnelle de la nature, au service du progrès humain.",fg:"var(--blue)",bg:"var(--blue2)"},
 ];
 
 let fcFilter='Tous',fcIdx=0,fcDeck=[...flashcards];
@@ -310,6 +318,16 @@ const quizData=[
 {q:"Hobbes pense que l'état de nature est :",opts:["Un paradis perdu","Une guerre de tous contre tous","Un état de bonheur","Une société primitive"],ans:1,exp:"Léviathan : sans État, les hommes sont en conflit permanent. Le contrat social crée le Léviathan (l'État) pour garantir la paix et la sécurité."},
 {q:"Quelle est la thèse de Bergson sur l'art ?",opts:["L'art est inutile","L'artiste voit ce que nous ne percevons plus","L'art doit imiter la nature","L'art est une technique comme une autre"],ans:1,exp:"Le rire : l'habitude nous empêche de voir le réel. L'artiste lève ce voile et nous montre la réalité dans sa singularité."},
 {q:"Comment s'appelle l'œuvre d'Adam Smith tombée en commentaire au bac techno 2023 ET 2025 ?",opts:["La richesse des nations","Du contrat social","Théorie des sentiments moraux","Éthique à Nicomaque"],ans:2,exp:"Théorie des sentiments moraux (1759) : Smith y traite de la justice et de la sympathie morale. Ce texte est tombé deux fois en commentaire au bac techno."},
+{q:"Quel sujet de philo techno est tombé en 2019 en Métropole ?",opts:["L'art nous apprend-il quelque chose ?","Seul ce qui peut s'échanger a-t-il de la valeur ?","La liberté consiste-t-elle à n'obéir à personne ?","Sommes-nous libres en toutes circonstances ?"],ans:1,exp:"Bac techno 2019 : « Seul ce qui peut s'échanger a-t-il de la valeur ? » et « Les lois peuvent-elles faire notre bonheur ? ». Commentaire sur Montaigne."},
+{q:"En 2018 au bac techno, quel sujet portait sur la technique ?",opts:["Transformer la nature, est-ce gagner en liberté ?","Peut-on maîtriser le développement technique ?","L'artiste est-il maître de son travail ?","La technique nous aliène-t-elle ?"],ans:1,exp:"Bac techno 2018 : « L'expérience peut-elle être trompeuse ? » et « Peut-on maîtriser le développement technique ? ». Commentaire sur Montesquieu."},
+{q:"Qui a écrit « Chacun appelle barbarie ce qui n'est pas de son usage » ?",opts:["Rousseau","Lévi-Strauss","Montaigne","Voltaire"],ans:2,exp:"Montaigne, Essais (I, 31) : le relativisme culturel. Nos jugements sur les « barbares » révèlent nos propres préjugés."},
+{q:"Quel sujet de 2016 (techno) portait sur la liberté et le devoir ?",opts:["Reconnaître ses devoirs, est-ce renoncer à sa liberté ?","La liberté consiste-t-elle à n'obéir à personne ?","Sommes-nous libres en toutes circonstances ?","Avons-nous le devoir d'être libres ?"],ans:0,exp:"Bac techno 2016 : « La pluralité des cultures fait-elle obstacle à l'unité du genre humain ? » et « Reconnaître ses devoirs, est-ce renoncer à sa liberté ? »."},
+{q:"Pour Mauss, l'échange fondamental dans la société est :",opts:["L'échange marchand","Le don et le contre-don","Le contrat social","La division du travail"],ans:1,exp:"Essai sur le don : donner, recevoir, rendre. Le don crée du lien social et de l'obligation réciproque, fondement de la vie en société."},
+{q:"Quel philosophe dit que le bon sens est la chose la mieux partagée ?",opts:["Platon","Aristote","Descartes","Kant"],ans:2,exp:"Descartes, Discours de la méthode : tous les hommes possèdent la raison naturellement. Ce qui diffère, c'est la méthode pour bien la conduire."},
+{q:"En 2017 au bac techno, quel sujet portait sur le bonheur ?",opts:["Le bonheur est-il affaire de raison ?","Pour trouver le bonheur, faut-il le rechercher ?","Avons-nous besoin d'art ?","Les lois peuvent-elles faire notre bonheur ?"],ans:1,exp:"Bac techno 2017 : « Y a-t-il un mauvais usage de la raison ? » et « Pour trouver le bonheur, faut-il le rechercher ? ». Commentaire sur Durkheim."},
+{q:"Lévi-Strauss affirme que le barbare c'est :",opts:["Celui qui vit sans lois","Celui qui ignore la science","L'homme qui croit à la barbarie","Celui qui refuse le progrès"],ans:2,exp:"Race et histoire : qualifier une culture de « barbare » est en soi un acte barbare. Toutes les cultures ont une valeur et une dignité égales."},
+{q:"En 2020, l'épreuve de philo du bac techno :",opts:["Portait sur la liberté","A été remplacée par le contrôle continu (COVID)","Portait sur le bonheur","A eu lieu en septembre"],ans:1,exp:"En 2020, la crise COVID a entraîné l'annulation de l'épreuve de philo. Le bac a été validé par le contrôle continu."},
+{q:"Combien de sessions du bac techno (2016-2025) ont proposé un sujet sur la liberté ?",opts:["4","6","8","Toutes"],ans:2,exp:"La liberté est présente dans 8 sessions sur 9 (hors 2020 annulée) : 2016, 2021, 2022, 2023 (×2), 2024, 2025, et indirectement en 2019. C'est LA notion incontournable."},
 ];
 
 let qIdx=0,score=0,answered=false;
@@ -317,7 +335,7 @@ function renderQuizIntro(){
   document.getElementById('quiz-container').innerHTML=`
     <div class="quiz-intro">
       <h2>Teste tes connaissances</h2>
-      <p>20 questions sur les notions, auteurs, citations et sujets du bac. Prêt ?</p>
+      <p>30 questions sur les notions, auteurs, citations et 10 ans de sujets du bac. Prêt ?</p>
       <button class="quiz-start" onclick="startQuiz()">Commencer le quiz</button>
     </div>`;
 }
@@ -500,7 +518,42 @@ body:"Rousseau montre que c'est la civilisation qui corrompt notre rapport à la
 ref:"Rousseau, Discours sur l'inégalité · Jonas, Le principe responsabilité"},
 ],
 conclusion:`<b>Réponse :</b> La nature n'est pas hostile à l'homme au sens d'une intention malveillante. C'est nous qui lui prêtons cette hostilité parce que nous la jugeons depuis nos besoins. En réalité, l'homme fait partie de la nature, et c'est en reconnaissant cette appartenance qu'il peut cesser de la percevoir comme une ennemie.<br><br><b>Ouverture :</b> N'est-ce pas finalement l'homme, par la puissance destructrice de sa technique, qui est devenu hostile à la nature ?`
+,
+{year:"2022",title:"La liberté consiste-t-elle à n'obéir à personne ?",
+intro:`<b>Accroche :</b> Un adolescent qui refuse toute autorité se sent libre — mais l'est-il vraiment, ou est-il esclave de ses impulsions ?<br><br><b>Définitions :</b> « Liberté » : capacité d'agir selon sa volonté. « N'obéir à personne » : refuser toute contrainte extérieure.<br><br><b>Problématique :</b> La liberté se réduit-elle à l'absence de toute obéissance, ou certaines formes d'obéissance sont-elles des conditions de la liberté ?<br><br><b>Plan :</b> L'obéissance semble contraire à la liberté (I), mais obéir à la loi qu'on s'est prescrite est liberté (II), ce qui montre que la vraie liberté suppose des limites consenties (III).`,
+parts:[
+{n:"I",title:"Obéir semble contraire à la liberté",
+body:"Spontanément, être libre c'est ne dépendre de personne. L'anarchisme (Bakounine) pousse cette logique : toute autorité est aliénation. La Boétie montre dans le Discours de la servitude volontaire que les hommes se soumettent par habitude, pas par nécessité.",
+ref:"Bakounine · La Boétie, Discours de la servitude volontaire",
+transition:"Pourtant, une liberté sans règle ne risque-t-elle pas de se retourner contre elle-même ? Sans lois, c'est le plus fort qui impose sa volonté."},
+{n:"II",title:"Obéir à la loi qu'on s'est prescrite est liberté",
+body:"Rousseau distingue liberté naturelle (faire ce qu'on veut) et liberté civile (obéir à la loi qu'on a votée). Kant complète : l'autonomie morale consiste à obéir à la raison, pas à ses pulsions. Obéir à sa raison, c'est être libre au sens le plus noble.",
+ref:"Rousseau, Du contrat social · Kant, Fondements de la métaphysique des mœurs",
+transition:"Mais comment distinguer l'obéissance qui libère de celle qui asservit ?"},
+{n:"III",title:"La liberté suppose des limites acceptées",
+body:"Spinoza montre que la liberté n'est pas l'absence de détermination mais la compréhension de ce qui nous détermine. Un État de droit protège la liberté de chacun par des lois justes. La liberté absolue détruit la liberté de tous.",
+ref:"Spinoza, Traité théologico-politique · Montesquieu, De l'esprit des lois"},
+],
+conclusion:`<b>Réponse :</b> La liberté ne consiste pas à n'obéir à personne. La vraie liberté est autonomie : obéir à des lois que la raison ou la volonté collective se donnent.<br><br><b>Ouverture :</b> Reste à savoir si, dans nos démocraties, les citoyens sont véritablement les auteurs des lois auxquelles ils obéissent.`
+},
+{year:"2019",title:"Seul ce qui peut s'échanger a-t-il de la valeur ?",
+intro:`<b>Accroche :</b> Un tableau vendu pour des millions a-t-il plus de valeur qu'un souvenir d'enfance qu'on ne vendrait pour rien au monde ?<br><br><b>Définitions :</b> « S'échanger » : être l'objet d'une transaction. « Valeur » : ce qui mérite estime — valeur marchande ou morale.<br><br><b>Problématique :</b> La valeur des choses se mesure-t-elle uniquement à leur capacité d'être échangées, ou existe-t-il des valeurs irréductibles au marché ?<br><br><b>Plan :</b> L'échange crée la valeur marchande (I), mais l'inéchangeable a une valeur supérieure (II), ce qui invite à distinguer valeur marchande et valeur morale (III).`,
+parts:[
+{n:"I",title:"L'échange crée la valeur marchande",
+body:"Adam Smith montre que la valeur d'un bien se mesure à ce qu'on est prêt à donner en échange. Le prix naît de l'offre et la demande. Marx ajoute que la valeur d'échange repose sur le travail humain incorporé dans la marchandise.",
+ref:"Smith, Richesse des nations · Marx, Le Capital",
+transition:"Cependant, les choses les plus précieuses — l'amour, l'amitié, la dignité — sont-elles réductibles à un prix ?"},
+{n:"II",title:"L'inéchangeable a une valeur supérieure",
+body:"Kant distingue ce qui a un prix (échangeable) et ce qui a une dignité (l'être humain, jamais un moyen). L'amitié, la liberté, la vie humaine ont une valeur précisément parce qu'on ne peut pas les acheter.",
+ref:"Kant, Fondements de la métaphysique des mœurs · Simone Weil, L'enracinement",
+transition:"Comment articuler ces deux ordres de valeur dans une société qui tend à tout marchandiser ?"},
+{n:"III",title:"Distinguer valeur marchande et valeur morale",
+body:"Mauss montre que l'échange n'est pas toujours marchand : le don crée du lien social, pas du profit. Aristote distinguait la chrématistique (accumulation) de l'économie (gestion du foyer). La vraie question est de savoir quelles choses doivent rester hors marché.",
+ref:"Mauss, Essai sur le don · Aristote, Politique"},
+],
+conclusion:`<b>Réponse :</b> Si l'échange marchand crée une forme de valeur mesurable, il ne constitue pas le seul critère. La dignité humaine, l'amitié, la liberté — les choses qui ont le plus de valeur sont celles qui ne s'échangent pas.<br><br><b>Ouverture :</b> À l'heure où les données personnelles et le temps d'attention font l'objet de transactions, la question des limites du marché n'a jamais été aussi urgente.`
 }
+
 ];
 
 const sc=document.getElementById('sujets-container');
